@@ -2,7 +2,6 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM-Omni project
 
 from dataclasses import dataclass, field
-from unittest.mock import Mock
 
 import pytest
 
@@ -33,12 +32,12 @@ def clock(monkeypatch):
 
 
 @pytest.fixture
-def connector(monkeypatch):
-    store = Mock()
+def connector(monkeypatch, mocker):
+    store = mocker.Mock()
     store.setup.return_value = 0
     store.get.return_value = b""
     monkeypatch.setattr(module, "MooncakeDistributedStore", lambda: store)
-    monkeypatch.setattr(module, "ReplicateConfig", Mock)
+    monkeypatch.setattr(module, "ReplicateConfig", mocker.Mock)
     connector = module.MooncakeStoreConnector({})
     monkeypatch.setattr(connector, "deserialize_obj", lambda raw: raw.decode())
     yield connector
